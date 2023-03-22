@@ -74,7 +74,7 @@ headerPrincipal($data);
       calendar.render();
     });
 //----------------------------------------
-//SELECCIONAR UN DIA DEL LADO DEL USUARIO
+//SELECCIONAR UN DIA DEL LADO DEL USUARIO 2
 //----------------------------------------
 var selectedCell = null;
 $(document).on("click", ".fc-daygrid-day", function() {
