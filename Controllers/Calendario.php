@@ -1,4 +1,7 @@
 <?php 
+
+//Se agrega este archivo TCliente
+
 	require_once("Models/TCliente.php");
 
 	class Calendario extends Controllers{
