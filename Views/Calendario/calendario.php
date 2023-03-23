@@ -14,9 +14,15 @@
 <script src="<?= media();?>/js/jquery.min.js"></script>
 </head>
 <body>
+  <!--RECORDAR QUE ESTE ARCHIVO ES LA VISTA DE CALENDARIO-->
+
 <?php
+//TRAE EL HEADER 
 headerPrincipal($data); 
 ?>
+
+<!-- 
+  ACA SE DIBUJA EL CALENDARIO(VISTA) EN LA RUTA http://localhost/prueba_veterinaria/calendario-->
   <div id='script-warning'>
     <code>ics/feed.ics</code> must be servable
   </div>
@@ -31,6 +37,7 @@ headerPrincipal($data);
       Agendar hora
     </button>
   </div>
+
 
 <script>
  //variable de fecha de bloqueo   
@@ -74,7 +81,7 @@ headerPrincipal($data);
       calendar.render();
     });
 //----------------------------------------
-//SELECCIONAR UN DIA DEL LADO DEL USUARIO 2
+//SELECCIONAR UN DIA DEL LADO DEL USUARIO 
 //----------------------------------------
 var selectedCell = null;
 $(document).on("click", ".fc-daygrid-day", function() {
@@ -113,8 +120,9 @@ $(document).on('click','#cerrar',function(){
   $('#exampleModal').hide();
   $('#exampleModal2').hide();
 })
-
 </script>
+
+
 
 <!-- Modal para registrar la cita-->
 <div class="modal" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -125,7 +133,9 @@ $(document).on('click','#cerrar',function(){
         
       </div>
       <div class="modal-body" style="color:black; font-size:20px">
-      <form action="/action_page.php">
+
+ <!-- FORMULARIO -->     
+      <form id="generar_cita" name="generar_cita">
 
         <div class="form-group">
           <label for="text">Fecha de cita :</label>
@@ -134,13 +144,22 @@ $(document).on('click','#cerrar',function(){
 
         <div class="form-group">
           <label for="text">Nombre :</label>
+          <!-- 
           <input type="text" class="form-control" id="nombre" value="Juanita Balenciaga" readonly>
-        </div>
-  
+         -->
+        <input  type="text" id="nombre" name="nombre" placeholder="Nombre completo" >
+        </div> 
+
+  <!-- ARE DE TRABAJO -->
         <div class="form-group">
           <label for="email">Email :</label>
+          <!--
           <input type="email" class="form-control" id="email" value="juanita@gmail.com" readonly>
+        -->
+        <input  type="email" id="email" name="email" placeholder="email@example.com"  >
         </div>
+
+
 
         <div class="form-group">
           <label for="text">Servicio:</label>
@@ -165,7 +184,14 @@ $(document).on('click','#cerrar',function(){
           <label><input type="checkbox"> Aceptar acuerdos y condiciones</label>
         </div>
 
-        <button type="submit" class="btn btn-default">Submit</button>
+
+<!-- ARE DE TRABAJO -->
+        <div class="p-t-18">
+							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+								Enviar cita
+							</button>
+						</div>
+
       </form>
       </div>
       <div class="modal-footer">
@@ -197,4 +223,5 @@ footerPrincipal($data);
 ?>
 </body>
 <script src="<?= media();?>/js/bienvenida.js"></script>
+<script src="<?= media(); ?>/js/functions_citas.js"></script>
 </html>

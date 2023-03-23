@@ -1,5 +1,12 @@
 <?php 
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+require 'Libraries/phpmailer/Exception.php';
+require 'Libraries/phpmailer/PHPMailer.php';
+require 'Libraries/phpmailer/SMTP.php';
+
 	//Retorla la url del proyecto
 	function base_url()
 	{
@@ -107,6 +114,48 @@
     function formatMoney($cantidad){
         $cantidad = number_format($cantidad,2,SPD,SPM);
         return $cantidad;
+    }
+
+
+    //SI LA FUNCION ENVIA TODO CORRECTO DEBERIA ENVIAR MSJ TODO CORRECTO
+    function sendMailLocal($data,$template){
+        //Create an instance; passing `true` enables exceptions
+        $mail = new PHPMailer(true);
+        ob_start();
+        require_once("Views/Template/Email/".$template.".php");
+        $mensaje = ob_get_clean();
+
+        try {
+            //Server settings
+            $mail->SMTPDebug = 1;                      //Enable verbose debug output
+            $mail->isSMTP();                                            //Send using SMTP
+           // $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+           $mail->Host       = 'smtp.office365.com';  
+           $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+           $mail->Username   = '1346203@senati.pe';                   //SMTP username
+           $mail->Password   = 'Virtual20';                             //SMTP password
+            //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+            $mail->SMTPSecure = 'tls';  
+            $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+            //Recipients - es el q envia
+            $mail->setFrom('1346203@senati.pe', 'Mailer PHP');
+            //trae el correo de la empresa y lo prepara para enviar todo html con el mensaje
+            $mail->addAddress($data['email']);     //Add a recipient
+            $mail->addAddress($data['emailSuscriptor']);         
+            if(!empty($data['emailCopia'])){
+                $mail->addBCC($data['emailCopia']);
+            }
+            //Content
+            $mail->isHTML(true);                                  //Set email format to HTML
+            $mail->Subject = $data['asunto'];
+            $mail->Body    = $mensaje;
+            
+            $mail->send();
+            echo 'Mensaje enviado';
+        } catch (Exception $e) {
+            echo "Error en el envío del mensaje: {$mail->ErrorInfo}";
+        }
     }
     
 
