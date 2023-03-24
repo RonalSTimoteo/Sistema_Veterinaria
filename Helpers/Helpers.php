@@ -133,7 +133,7 @@ require 'Libraries/phpmailer/SMTP.php';
            $mail->Host       = 'smtp.office365.com';  
            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
            $mail->Username   = '1346203@senati.pe';                   //SMTP username
-           $mail->Password   = 'Virtual20';                             //SMTP password
+           $mail->Password   = 'Virtual23';                             //SMTP password
             //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
             $mail->SMTPSecure = 'tls';  
             $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
