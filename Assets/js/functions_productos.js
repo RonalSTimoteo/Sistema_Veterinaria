@@ -104,6 +104,7 @@ function fntCategorias(){
         let request = (window.XMLHttpRequest) ? 
                     new XMLHttpRequest() : 
                     new ActiveXObject('Microsoft.XMLHTTP');
+
         request.open("GET",ajaxUrl,true);
         request.send();
         request.onreadystatechange = function(){

@@ -9,7 +9,7 @@ if(document.querySelector("#generar_cita")){
                     new XMLHttpRequest() : 
                     new ActiveXObject('Microsoft.XMLHTTP');
 	//let ajaxUrl = base_url+'/Productos/setProducto'; 
-	let ajaxUrl = 'http://localhost/prueba_veterinaria/calendario/suscripcion';
+	let ajaxUrl = 'http://localhost/prueba_veterinaria/calendario/Cita';
 		let formData = new FormData(frmSuscripcion);
 
 	   	request.open("POST",ajaxUrl,true);
@@ -47,3 +47,8 @@ if(document.querySelector("#generar_cita")){
 
 	},false);
 }
+
+
+
+
+

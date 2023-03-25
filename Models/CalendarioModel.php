@@ -6,5 +6,17 @@
 		{
 			parent::__construct();
 		}	
+
+
+		public function obtenerFechasBloqueadas()
+        {
+            $sql = "SELECT fecha_bloqueo FROM bloquearfecha";
+            //develve todos los registros
+            return $this->select_all($sql);
+        }
+    
+
+
+
 	}
  ?>

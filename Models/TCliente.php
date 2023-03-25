@@ -5,8 +5,6 @@ trait TCliente{
 	private $strNombre;
 	private $strEmail;
 
-
-
 //busca si existen y luego lo inserta 
 	public function setCita(string $nombre, string $email){
 		$this->con = new Mysql();

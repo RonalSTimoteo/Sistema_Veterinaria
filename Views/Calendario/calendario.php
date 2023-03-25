@@ -15,11 +15,13 @@
 </head>
 <body>
   <!--RECORDAR QUE ESTE ARCHIVO ES LA VISTA DE CALENDARIO-->
-
 <?php
 //TRAE EL HEADER 
 headerPrincipal($data); 
 ?>
+
+
+
 
 <!-- 
   ACA SE DIBUJA EL CALENDARIO(VISTA) EN LA RUTA http://localhost/prueba_veterinaria/calendario-->
@@ -38,10 +40,8 @@ headerPrincipal($data);
     </button>
   </div>
 
-
-<script>
- //variable de fecha de bloqueo   
-  var bloqueo = '2023-03-10';
+  <script>
+    var bloqueo = '2023-03-18'; // Asignar un valor predeterminado
   //propiedades de fullCalendar
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
@@ -53,33 +53,35 @@ headerPrincipal($data);
         center: 'title',
         right: 'dayGridMonth'
       },
-
       dayCellDidMount: function(info) {
         if (info.date.getDay() === 0) { 
-                info.el.style.backgroundColor = "#999999";
-            }
-        },
-
-      events: {
-        url: 'ics/feed.ics',
-        format: 'ics',
-        failure: function() {
-          document.getElementById('script-warning').style.display = 'block';
+          info.el.style.backgroundColor = "#999999";
         }
       },
-
+      events: function(fetchInfo, successCallback, failureCallback) {
+        $.ajax({
+          url: 'http://localhost/prueba_veterinaria/calendario/eventos',
+          type: 'GET',
+          dataType: 'json',
+          success: function(eventos) {
+            successCallback(eventos);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            failureCallback(errorThrown);
+          }
+        });
+      },
       loading: function(bool) {
         document.getElementById('loading').style.display =
           bool ? 'block' : 'none';
-      },
+      }
     });
-
     calendar.setOption('datesSet', function(info) {
       $('.fc-day[data-date="' + bloqueo + '"]').css('background-color', '#999999');
     });
+    calendar.render();
+  });
 
-      calendar.render();
-    });
 //----------------------------------------
 //SELECCIONAR UN DIA DEL LADO DEL USUARIO 
 //----------------------------------------
@@ -120,7 +122,10 @@ $(document).on('click','#cerrar',function(){
   $('#exampleModal').hide();
   $('#exampleModal2').hide();
 })
+
 </script>
+
+
 
 
 
