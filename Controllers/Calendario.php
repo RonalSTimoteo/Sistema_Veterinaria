@@ -34,6 +34,7 @@ public function eventos()
         $eventos[] = $evento;
     }
     // Devolver el array de eventos en formato JSON
+    header('Content-Type: application/json');
     echo json_encode($eventos);
     die();
 

@@ -41,46 +41,58 @@ headerPrincipal($data);
   </div>
 
   <script>
-    var bloqueo = '2023-03-18'; // Asignar un valor predeterminado
-  //propiedades de fullCalendar
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      locale: 'es',
-      displayEventTime: false,
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth'
-      },
-      dayCellDidMount: function(info) {
-        if (info.date.getDay() === 0) { 
-          info.el.style.backgroundColor = "#999999";
-        }
-      },
-      events: function(fetchInfo, successCallback, failureCallback) {
-        $.ajax({
-          url: 'http://localhost/prueba_veterinaria/calendario/eventos',
-          type: 'GET',
-          dataType: 'json',
-          success: function(eventos) {
-            successCallback(eventos);
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            failureCallback(errorThrown);
-          }
-        });
-      },
-      loading: function(bool) {
-        document.getElementById('loading').style.display =
-          bool ? 'block' : 'none';
-      }
-    });
-    calendar.setOption('datesSet', function(info) {
-      $('.fc-day[data-date="' + bloqueo + '"]').css('background-color', '#999999');
-    });
-    calendar.render();
+
+   var bloqueo = '2023-03-18'; // Asignar un valor predeterminado
+
+ 
+   document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: 'es',
+    displayEventTime: false,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth'
+    },
+
+    loading: function(bool) {
+      document.getElementById('loading').style.display =
+        bool ? 'block' : 'none';
+    }
   });
+
+  var eventosBloqueados; // declaración de la variable fuera del ajax
+
+  $.ajax({
+    url: 'http://localhost/prueba_veterinaria/calendario/eventos',
+    type: 'GET',
+    dataType: 'json',
+    success: function(eventos) {
+      // Almacenar los eventos en la variable declarada fuera del ajax
+      eventosBloqueados = eventos;
+      console.log(eventosBloqueados);
+
+      // Llamar al callback de éxito con los eventos recibidos
+      calendar.setOption('events', eventos);
+
+      calendar.setOption('datesSet', function(info) {
+        // Iterar sobre el array de fechas bloqueadas
+        eventosBloqueados.forEach(function(evento) {
+          // Seleccionar la fecha correspondiente
+          var fechaBloqueada = evento.start;
+          // Aplicar el estilo correspondiente
+          $('.fc-day[data-date="' + fechaBloqueada + '"]').css('background-color', '#f44336 ');
+        });
+      });
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      // Manejar el error...
+    }
+  });
+
+  calendar.render();
+});
 
 //----------------------------------------
 //SELECCIONAR UN DIA DEL LADO DEL USUARIO 
@@ -91,6 +103,8 @@ $(document).on("click", ".fc-daygrid-day", function() {
   if ($(this).hasClass("fc-day-sun")) {
     return; // no hacer nada si el día seleccionado es un domingo
   }
+
+  
   // verificar si la celda seleccionada es el 25 de marzo
    if ($(this).data("date") === bloqueo) {
     return; // no hacer nada si la fecha seleccionada es el 25 de marzo
@@ -102,7 +116,10 @@ $(document).on("click", ".fc-daygrid-day", function() {
   // pintar la nueva celda seleccionada
   $(this).css("background-color", "green");
   selectedCell = $(this);
+
+
 });
+
 
 $("#selected-date-btn").click(function() {
   // mostrar una alerta con la fecha seleccionada
