@@ -7,11 +7,35 @@
 <script type="text/javascript" src="<?= media();?>/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/calendar.css">
 <link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/style.css">
+
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800" rel="stylesheet">
 <script type="text/javascript" src="<?= media();?>/js/calendar.js"></script>
 <script type="text/javascript" src="<?= media();?>/js/locales-all.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 <script src="<?= media();?>/js/jquery.min.js"></script>
+
+<style>
+
+/*PINTA EN GRIS LOS DOMINGOS */
+.fc-day-sun {
+  background-color: #999999;
+}
+
+.fc-day-today {
+  background-color: gray !important;
+}
+
+.fc-daygrid-day.fc-day.fc-day-fri.fc-day-past .fecha-bloqueada {
+  background-color: gray !important;
+}
+/*ESTO LE DA COLOR GRIS A LAS CELDAS CON FECHAS BLQ DE LA BD */
+.fc-event {
+  background-color: 'rgb(153, 153, 153)';
+}
+
+</style>
+
 </head>
 <body>
   <!--RECORDAR QUE ESTE ARCHIVO ES LA VISTA DE CALENDARIO-->
@@ -19,9 +43,6 @@
 //TRAE EL HEADER 
 headerPrincipal($data); 
 ?>
-
-
-
 
 <!-- 
   ACA SE DIBUJA EL CALENDARIO(VISTA) EN LA RUTA http://localhost/prueba_veterinaria/calendario-->
@@ -40,12 +61,11 @@ headerPrincipal($data);
     </button>
   </div>
 
-  <script>
+<script> 
 
-   var bloqueo = '2023-03-18'; // Asignar un valor predeterminado
+var fechas_bloqueadas = [];
 
- 
-   document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
   var calendarEl = document.getElementById('calendar');
   var calendar = new FullCalendar.Calendar(calendarEl, {
     locale: 'es',
@@ -56,64 +76,96 @@ headerPrincipal($data);
       right: 'dayGridMonth'
     },
 
+
+    events: function (fetchInfo, successCallback, failureCallback) {
+      // Hacer la llamada Ajax para obtener las fechas bloqueadas
+      $.ajax({
+        url: 'http://localhost/prueba_veterinaria/calendario/fechas_bloqueadas',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Almacenar fechas bloqueadas en variable
+          fechas_bloqueadas = data;
+          console.log(data);
+
+      // Crear la lista de eventos del calendario
+      var eventos = [
+        {
+          title: 'Evento 1',
+          start: '2023-04-01'
+        },
+        {
+          title: 'Evento 2',
+          start: '2023-04-05'
+        }
+      ];
+
+                // Llamar a la función de callback con los eventos
+        successCallback(eventos.concat(fechas_bloqueadas.map(function(fecha_bloqueada) {
+            return {
+              title: '',
+              start: fecha_bloqueada,
+              display: 'background',
+              editable: false,
+              classNames: ['fecha-bloqueada']
+            };
+          })));
+        },
+
+          // Llamar a la función callback con los eventos del calendario
+      error: function () {
+      // Llamar a la función de callback con un array vacío en caso de error
+      successCallback([]);
+    }
+      });
+    },
+
+    eventRender: function(info) {
+  if (info.event.className.includes('fecha-bloqueada')) {
+    //EL Q LE DA COLOR AL FONDO DE LA CELDA
+    info.el.style.backgroundColor = 'rgb(128, 128, 128)';
+    info.el.style.pointerEvents = 'none';
+  }
+},
+
+
     loading: function(bool) {
       document.getElementById('loading').style.display =
         bool ? 'block' : 'none';
-    }
-  });
-
-  var eventosBloqueados; // declaración de la variable fuera del ajax
-
-  $.ajax({
-    url: 'http://localhost/prueba_veterinaria/calendario/eventos',
-    type: 'GET',
-    dataType: 'json',
-    success: function(eventos) {
-      // Almacenar los eventos en la variable declarada fuera del ajax
-      eventosBloqueados = eventos;
-      console.log(eventosBloqueados);
-
-      // Llamar al callback de éxito con los eventos recibidos
-      calendar.setOption('events', eventos);
-
-      calendar.setOption('datesSet', function(info) {
-        // Iterar sobre el array de fechas bloqueadas
-        eventosBloqueados.forEach(function(evento) {
-          // Seleccionar la fecha correspondiente
-          var fechaBloqueada = evento.start;
-          // Aplicar el estilo correspondiente
-          $('.fc-day[data-date="' + fechaBloqueada + '"]').css('background-color', '#f44336 ');
-        });
-      });
     },
-    error: function(jqXHR, textStatus, errorThrown) {
-      // Manejar el error...
-    }
-  });
+  }); //cierra FullCalendar
 
-  calendar.render();
-});
+
+    calendar.render();
+
+});//cierra el DOMContentLoaded
+
+
+
+
 
 //----------------------------------------
 //SELECCIONAR UN DIA DEL LADO DEL USUARIO 
 //----------------------------------------
 var selectedCell = null;
+
+//TODOS LOS DIAS Q SON DOMINGO NO SE PODRAN HACER CLICK 
 $(document).on("click", ".fc-daygrid-day", function() {
   // verificar si la celda seleccionada es un domingo
   if ($(this).hasClass("fc-day-sun")) {
     return; // no hacer nada si el día seleccionado es un domingo
   }
 
-  
-  // verificar si la celda seleccionada es el 25 de marzo
-   if ($(this).data("date") === bloqueo) {
-    return; // no hacer nada si la fecha seleccionada es el 25 de marzo
-  }
-  // des-pintar la celda anterior
+
+
+
+  // despintar la celda anterior / sino se queda marcada la celda se selecciono
   if (selectedCell !== null) {
     selectedCell.css("background-color", "");
   }
-  // pintar la nueva celda seleccionada
+
+
+  // pintar la nueva celda seleccionada - lo pinta de color verde 
   $(this).css("background-color", "green");
   selectedCell = $(this);
 
@@ -121,6 +173,11 @@ $(document).on("click", ".fc-daygrid-day", function() {
 });
 
 
+
+
+
+
+//SE REFLEJA EN FORMULARIO LA FECHA SELECCCIONADA
 $("#selected-date-btn").click(function() {
   // mostrar una alerta con la fecha seleccionada
   if (selectedCell !== null) {
@@ -134,6 +191,7 @@ $("#selected-date-btn").click(function() {
     $('#exampleModal2').show();
   }
 });
+
 //----FIN SELECCION USUARIO----------
 $(document).on('click','#cerrar',function(){
   $('#exampleModal').hide();
