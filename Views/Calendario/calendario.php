@@ -22,18 +22,6 @@
   background-color: #999999;
 }
 
-.fc-day-today {
-  background-color: gray !important;
-}
-
-.fc-daygrid-day.fc-day.fc-day-fri.fc-day-past .fecha-bloqueada {
-  background-color: gray !important;
-}
-/*ESTO LE DA COLOR GRIS A LAS CELDAS CON FECHAS BLQ DE LA BD */
-.fc-event {
-  background-color: 'rgb(153, 153, 153)';
-}
-
 </style>
 
 </head>
@@ -76,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
       right: 'dayGridMonth'
     },
 
-
     events: function (fetchInfo, successCallback, failureCallback) {
       // Hacer la llamada Ajax para obtener las fechas bloqueadas
       $.ajax({
@@ -88,20 +75,14 @@ document.addEventListener('DOMContentLoaded', function() {
           fechas_bloqueadas = data;
           console.log(data);
 
-      // Crear la lista de eventos del calendario
+      // Crear la lista de eventos del calendario - no quitar por q desaparece el color de las fech bñpqueads
       var eventos = [
-        {
-          title: 'Evento 1',
-          start: '2023-04-01'
-        },
-        {
-          title: 'Evento 2',
-          start: '2023-04-05'
-        }
-      ];
+        //para poner el diseño tipo spam bloqueado...
 
-                // Llamar a la función de callback con los eventos
+      ];
+      // Llamar a la función de callback con los eventos
         successCallback(eventos.concat(fechas_bloqueadas.map(function(fecha_bloqueada) {
+        
             return {
               title: '',
               start: fecha_bloqueada,
@@ -120,12 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     },
 
-    eventRender: function(info) {
-  if (info.event.className.includes('fecha-bloqueada')) {
-    //EL Q LE DA COLOR AL FONDO DE LA CELDA
-    info.el.style.backgroundColor = 'rgb(128, 128, 128)';
-    info.el.style.pointerEvents = 'none';
-  }
+   eventRender: function(info) {
+    //NO ESTA FUNCIONADO PERO IGUAL SIGUE BLOQUQDO POR SER PLOMO?   
+    //validando si a la clase event le incluimos las cadena fecha
+     if (info.event.className.includes('fecha-bloqueada')) {
+      //no permitimos la interaacion del usuario - 
+      info.el.style.pointerEvents = 'none';  
+     }
+
+  
 },
 
 

@@ -431,6 +431,7 @@ When it's NOT activated, the fc-button classes won't even be in the DOM.
   }
 .fc .fc-bg-event,
   .fc .fc-non-business,
+
   .fc .fc-highlight {
     /* will always have a harness with position:relative/absolute, so absolutely expand */
     position: absolute;
@@ -443,18 +444,22 @@ When it's NOT activated, the fc-button classes won't even be in the DOM.
     background: rgba(215, 215, 215, 0.3);
     background: var(--fc-non-business-color, rgba(215, 215, 215, 0.3));
   }
-.fc .fc-bg-event {
-    background: rgb(143, 223, 130);
-    background: var(--fc-bg-event-color, rgb(143, 223, 130));
-    opacity: 0.3;
-    opacity: var(--fc-bg-event-opacity, 0.3)
+
+  
+ /*ACA CAMBIAMOS EL COLOR DE LAS CELDAS BLOQUEDAS SEGUN LA BD */
+  .fc .fc-bg-event {
+    background: #999999;
+    background: var(--fc-bg-event-color, #999999);
   }
+
+
 .fc .fc-bg-event .fc-event-title {
       margin: .5em;
       font-size: .85em;
       font-size: var(--fc-small-font-size, .85em);
       font-style: italic;
     }
+    
 .fc .fc-highlight {
     background: rgba(188, 232, 241, 0.3);
     background: var(--fc-highlight-color, rgba(188, 232, 241, 0.3));
@@ -697,6 +702,7 @@ A HORIZONTAL event
 .fc-daygrid-day-frame,
 .fc-daygrid-day-events,
 .fc-daygrid-event-harness { /* for event top/bottom margins */
+
 }
 .fc-daygrid-day-frame:before, .fc-daygrid-day-events:before, .fc-daygrid-event-harness:before {
   content: "";
