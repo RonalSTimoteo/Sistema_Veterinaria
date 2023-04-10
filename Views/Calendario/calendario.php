@@ -15,77 +15,15 @@
 
 <script src="<?= media();?>/js/jquery.min.js"></script>
 
+
 <style>
 
-/*PINTA EN GRIS LOS DOMINGOS
-
-.fc-day-sun {
-  background-color: #999999;
-}
-*/
-/*
-.fc-day.dia-bloqueado {
-  background-color: red !important;
-}
-*/
-
-.dia-bloqueado {
-  background-color: #FFC1C1 !important;
-  pointer-events: none;
-}
-
-
-/*
-#calendar {
-  width: 50%;
-  height: 620px;
-  margin: 0 auto;
-}
-*/
+/*Reducir dimension del calendario sin perder lo respondive*/
 #calendar {
   width: 100%;
-  max-width: 600px;
-  height: 500px;
+  max-width: 700px;
+  height: 530px;
   margin: 0 auto;
-}
-
-
-
-@media (max-width: 768px) {
-  #calendar {
-    font-size: 12px;
-    height: 400px;
-  }
-}
-
-@media (max-width: 576px) {
-  #calendar {
-    font-size: 10px;
-    height: 300px;
-  }
-}
-
-.fc-header-toolbar {
-  padding: 5px;
-}
-
-.fc-daygrid-button {
-  font-size: 14px;
-  padding: 5px 10px;
-}
-
-#selected-date-btn {
-  font-size: 14px;
-  padding: 10px 20px;
-}
-
-.domingo {
-  background-color: yellow;
-}
-
-.fc-bgevent {
-  background-color: red;
-  opacity: 0.5;
 }
 
 </style>
@@ -97,6 +35,7 @@
 //TRAE EL HEADER 
 headerPrincipal($data); 
 ?>
+<br>
 <br>
 <!-- 
   ACA SE DIBUJA EL CALENDARIO(VISTA) EN LA RUTA http://localhost/prueba_veterinaria/calendario-->
@@ -115,67 +54,77 @@ headerPrincipal($data);
     </button>
   </div>
 
+  
+
   <script>
   // Variables de fecha de bloqueo
-  var diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-  var diasBloqueadosNum = [0, 1, 2, 3, 4, 5, 6];
-  var fechasBloqueadas = [];
-  var selectedDate;
 
-  document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      // Opciones del calendario
-    });
+var diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+var diasBloqueados = [0,1,2,3,4,5,6];
+var fechasBloqueadas = [];
+var selectedDate;
+var selectedCell = null;
 
-    // Llamada a la primera URL para recuperar el primer array
-    $.getJSON('http://localhost/prueba_veterinaria/calendario/dias_bloqueados', function(data) {
-      diasBloqueadosNum = data.map(dia => diasSemana.indexOf(dia));
-      console.log(diasBloqueadosNum);
+document.addEventListener('DOMContentLoaded', function() {
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    locale: 'es',
+    
+  });
 
-      // Renderizar el calendario
-      calendar.render();
-    });
+  // Llamada a la primera URL para recuperar el primer array
+  $.getJSON('http://localhost/Prueba_veterinaria/calendario/dias_bloqueados', function(data) {
+    // Asignar el valor obtenido a la variable diasBloqueados
+    diasBloqueados = data;
+    diasBloqueadosNum = diasBloqueados.map(dia => diasSemana.indexOf(dia));
+    console.log(diasBloqueadosNum);
 
     // Llamada a la segunda URL para recuperar el segundo array
     $.getJSON('http://localhost/prueba_veterinaria/calendario/fechas_bloqueadas', function(data) {
       fechasBloqueadas = data;
-      console.log(fechasBloqueadas);
+      console.log(data);
 
-      // Ejecutar la función para bloquear días
-      calendar.setOption('dayCellDidMount', bloquearDias);
+    // Ejecutar la función para bloquear días
+     bloquearDias({
+      date: new Date(),
+      el: document.createElement('div')
+      });
+  
+      // Renderizar el calendario después de haber obtenido ambos arrays
+      calendar.render();
     });
+  });
 
-    // Función para bloquear días
-    function bloquearDias(info) {
-      // Crear un nuevo objeto Date con el año, mes y día de la fecha actual
-      var fechaActual = new Date(info.date.getFullYear(), info.date.getMonth(), info.date.getDate());
+  function bloquearDias(info) {
+    // Crear un nuevo objeto Date con el año, mes y día de la fecha actual
+    var fechaActual = new Date(info.date.getFullYear(), info.date.getMonth(), info.date.getDate());
 
-      // Obtener el día de la semana de la nueva fecha
-      var diaSemana = fechaActual.getDay();
+    // Obtener el día de la semana de la nueva fecha
+    var diaSemana = fechaActual.getDay();
 
-      // Bloquear los días correspondientes
-      if (diasBloqueadosNum.indexOf(diaSemana) !== -1) {
-        info.el.style.backgroundColor = '#999999';
-      }
-
-      // Bloquear las fechas correspondientes
-      var fechaStr = moment(info.date).format('YYYY-MM-DD');
-      if (fechasBloqueadas.indexOf(fechaStr) !== -1) {
-        info.el.style.backgroundColor = '#999999';
-      }
+    // Bloquear los días correspondientes
+    if (diasBloqueadosNum.indexOf(diaSemana) !== -1 || fechasBloqueadas.indexOf(moment(info.date).format('YYYY-MM-DD')) !== -1) {
+      info.el.style.backgroundColor = '#999999';
     }
+  }
 
+  calendar.setOption('dayCellDidMount', bloquearDias);
+  
     //----------------------------------------
     //SELECCIONAR UN DIA DEL LADO DEL USUARIO 
     //----------------------------------------
-    var selectedCell = null;
+ 
     $(document).on("click", ".fc-daygrid-day", function() {
       selectedDate = moment($(this).data('date'));
 
       if (diasBloqueadosNum.indexOf(selectedDate.day()) !== -1) {
         return; // no hacer nada si el día seleccionado está bloqueado
       }
+
+        // Validar si la fecha está bloqueada
+  if (diasBloqueadosNum.indexOf(selectedDate.day()) !== -1 || fechasBloqueadas.indexOf(selectedDate.format('YYYY-MM-DD')) !== -1) {
+    return; // No hacer nada si la fecha está bloqueada
+  }
 
       // des-pintar la celda anterior
       if (selectedCell !== null) {
@@ -187,6 +136,33 @@ headerPrincipal($data);
       selectedCell = $(this);
     });
   });
+
+//SE REFLEJA EN FORMULARIO LA FECHA SELECCCIONADA
+$("#selected-date-btn").click(function() {
+  // mostrar una alerta con la fecha seleccionada
+  if (selectedCell !== null) {
+    var dateStr = selectedCell.attr("data-date"); // obtener la fecha de la celda seleccionada
+    var selectedDate = moment(dateStr); // convertir la cadena de fecha a un objeto moment
+    var formattedDate = selectedDate.format("DD/MM/YYYY"); // formatear la fecha como "DD/MM/YYYY"
+    document.getElementById("fecha_cita").value=formattedDate;
+    $('#exampleModal').show();
+    //alert("Fecha seleccionada: " + formattedDate); // mostrar una alerta con la fecha seleccionada
+  } else {
+    $('#exampleModal2').show();
+  }
+});
+
+//----FIN SELECCION USUARIO----------
+$(document).on('click','#cerrar',function(){
+  $('#exampleModal').hide();
+  $('#exampleModal2').hide();
+})
+
+$(document).on('click','#close-modal-btn',function(){
+  $('#exampleModal').hide();
+});
+
+
 </script>
   
 
@@ -197,8 +173,15 @@ headerPrincipal($data);
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background:white; ">
       <div class="modal-header" style="background:#5499C7;">
-        <h5 class="modal-title" id="exampleModalLabel" style="color:white; font-size:24px">Registrado con exito</h5>
-        
+
+      <div class="text-center w-100">
+          <h5 class="modal-title" id="exampleModalLabel" style="color:white; font-size:24px">Registrado con éxito</h5>
+        </div>
+        <!-- Botón de cerrar -->
+        <button type="button" class="close mr-3" id="close-modal-btn" data-dismiss="modal" aria-label="Close">
+          X
+        </button>
+    
       </div>
       <div class="modal-body" style="color:black; font-size:20px">
 
@@ -247,23 +230,16 @@ headerPrincipal($data);
             <option value="">4:00pm - 5:00pm</option>
           </select>
         </div>
-
+<!--
         <div class="checkbox">
           <label><input type="checkbox"> Aceptar acuerdos y condiciones</label>
         </div>
-
-
-<!-- ARE DE TRABAJO -->
-        <div class="p-t-18">
-							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-								Enviar cita
-							</button>
-						</div>
+-->
 
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" style="margin:auto" data-bs-dismiss="modal" aria-label="Close" id="cerrar">Ok</button>
+        <button type="button" class="btn btn-primary" style="margin:auto" data-bs-dismiss="modal" aria-label="Close" id="cerrar">Reservar</button>
       </div>
     </div>
   </div>
@@ -287,9 +263,14 @@ headerPrincipal($data);
   </div>
 </div>
 <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 
 <?php
-
 footerPrincipal($data); 
 
 ?>
