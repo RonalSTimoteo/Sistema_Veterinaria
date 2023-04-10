@@ -17,9 +17,75 @@
 
 <style>
 
-/*PINTA EN GRIS LOS DOMINGOS */
+/*PINTA EN GRIS LOS DOMINGOS
+
 .fc-day-sun {
   background-color: #999999;
+}
+*/
+/*
+.fc-day.dia-bloqueado {
+  background-color: red !important;
+}
+*/
+
+.dia-bloqueado {
+  background-color: #FFC1C1 !important;
+  pointer-events: none;
+}
+
+
+/*
+#calendar {
+  width: 50%;
+  height: 620px;
+  margin: 0 auto;
+}
+*/
+#calendar {
+  width: 100%;
+  max-width: 600px;
+  height: 500px;
+  margin: 0 auto;
+}
+
+
+
+@media (max-width: 768px) {
+  #calendar {
+    font-size: 12px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 576px) {
+  #calendar {
+    font-size: 10px;
+    height: 300px;
+  }
+}
+
+.fc-header-toolbar {
+  padding: 5px;
+}
+
+.fc-daygrid-button {
+  font-size: 14px;
+  padding: 5px 10px;
+}
+
+#selected-date-btn {
+  font-size: 14px;
+  padding: 10px 20px;
+}
+
+.domingo {
+  background-color: yellow;
+}
+
+.fc-bgevent {
+  background-color: red;
+  opacity: 0.5;
 }
 
 </style>
@@ -31,7 +97,7 @@
 //TRAE EL HEADER 
 headerPrincipal($data); 
 ?>
-
+<br>
 <!-- 
   ACA SE DIBUJA EL CALENDARIO(VISTA) EN LA RUTA http://localhost/prueba_veterinaria/calendario-->
   <div id='script-warning'>
@@ -41,7 +107,7 @@ headerPrincipal($data);
   <div id='loading'>loading...</div>
   <div id='calendar'></div>
  
-
+<br>
 <!--Boton del modal-->
   <div class="text-center mb-3">
     <button type="button" class="btn btn-primary" id="selected-date-btn">
@@ -49,142 +115,80 @@ headerPrincipal($data);
     </button>
   </div>
 
-<script> 
+  <script>
+  // Variables de fecha de bloqueo
+  var diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  var diasBloqueadosNum = [0, 1, 2, 3, 4, 5, 6];
+  var fechasBloqueadas = [];
+  var selectedDate;
 
-var fechas_bloqueadas = [];
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      // Opciones del calendario
+    });
 
-document.addEventListener('DOMContentLoaded', function() {
-  var calendarEl = document.getElementById('calendar');
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    locale: 'es',
-    displayEventTime: false,
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth'
-    },
+    // Llamada a la primera URL para recuperar el primer array
+    $.getJSON('http://localhost/prueba_veterinaria/calendario/dias_bloqueados', function(data) {
+      diasBloqueadosNum = data.map(dia => diasSemana.indexOf(dia));
+      console.log(diasBloqueadosNum);
 
-    events: function (fetchInfo, successCallback, failureCallback) {
-      // Hacer la llamada Ajax para obtener las fechas bloqueadas
-      $.ajax({
-        url: 'http://localhost/prueba_veterinaria/calendario/fechas_bloqueadas',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          // Almacenar fechas bloqueadas en variable
-          fechas_bloqueadas = data;
-          console.log(data);
+      // Renderizar el calendario
+      calendar.render();
+    });
 
-      // Crear la lista de eventos del calendario - no quitar por q desaparece el color de las fech bñpqueads
-      var eventos = [
-        //para poner el diseño tipo spam bloqueado...
+    // Llamada a la segunda URL para recuperar el segundo array
+    $.getJSON('http://localhost/prueba_veterinaria/calendario/fechas_bloqueadas', function(data) {
+      fechasBloqueadas = data;
+      console.log(fechasBloqueadas);
 
-      ];
-      // Llamar a la función de callback con los eventos
-        successCallback(eventos.concat(fechas_bloqueadas.map(function(fecha_bloqueada) {
-        
-            return {
-              title: '',
-              start: fecha_bloqueada,
-              display: 'background',
-              editable: false,
-              classNames: ['fecha-bloqueada']
-            };
-          })));
-        },
+      // Ejecutar la función para bloquear días
+      calendar.setOption('dayCellDidMount', bloquearDias);
+    });
 
-          // Llamar a la función callback con los eventos del calendario
-      error: function () {
-      // Llamar a la función de callback con un array vacío en caso de error
-      successCallback([]);
+    // Función para bloquear días
+    function bloquearDias(info) {
+      // Crear un nuevo objeto Date con el año, mes y día de la fecha actual
+      var fechaActual = new Date(info.date.getFullYear(), info.date.getMonth(), info.date.getDate());
+
+      // Obtener el día de la semana de la nueva fecha
+      var diaSemana = fechaActual.getDay();
+
+      // Bloquear los días correspondientes
+      if (diasBloqueadosNum.indexOf(diaSemana) !== -1) {
+        info.el.style.backgroundColor = '#999999';
+      }
+
+      // Bloquear las fechas correspondientes
+      var fechaStr = moment(info.date).format('YYYY-MM-DD');
+      if (fechasBloqueadas.indexOf(fechaStr) !== -1) {
+        info.el.style.backgroundColor = '#999999';
+      }
     }
-      });
-    },
 
-   eventRender: function(info) {
-    //NO ESTA FUNCIONADO PERO IGUAL SIGUE BLOQUQDO POR SER PLOMO?   
-    //validando si a la clase event le incluimos las cadena fecha
-     if (info.event.className.includes('fecha-bloqueada')) {
-      //no permitimos la interaacion del usuario - 
-      info.el.style.pointerEvents = 'none';  
-     }
+    //----------------------------------------
+    //SELECCIONAR UN DIA DEL LADO DEL USUARIO 
+    //----------------------------------------
+    var selectedCell = null;
+    $(document).on("click", ".fc-daygrid-day", function() {
+      selectedDate = moment($(this).data('date'));
 
-  
-},
+      if (diasBloqueadosNum.indexOf(selectedDate.day()) !== -1) {
+        return; // no hacer nada si el día seleccionado está bloqueado
+      }
 
+      // des-pintar la celda anterior
+      if (selectedCell !== null) {
+        selectedCell.css("background-color", "");
+      }
 
-    loading: function(bool) {
-      document.getElementById('loading').style.display =
-        bool ? 'block' : 'none';
-    },
-  }); //cierra FullCalendar
-
-
-    calendar.render();
-
-});//cierra el DOMContentLoaded
-
-
-
-
-
-//----------------------------------------
-//SELECCIONAR UN DIA DEL LADO DEL USUARIO 
-//----------------------------------------
-var selectedCell = null;
-
-//TODOS LOS DIAS Q SON DOMINGO NO SE PODRAN HACER CLICK 
-$(document).on("click", ".fc-daygrid-day", function() {
-  // verificar si la celda seleccionada es un domingo
-  if ($(this).hasClass("fc-day-sun")) {
-    return; // no hacer nada si el día seleccionado es un domingo
-  }
-
-
-
-
-  // despintar la celda anterior / sino se queda marcada la celda se selecciono
-  if (selectedCell !== null) {
-    selectedCell.css("background-color", "");
-  }
-
-
-  // pintar la nueva celda seleccionada - lo pinta de color verde 
-  $(this).css("background-color", "green");
-  selectedCell = $(this);
-
-
-});
-
-
-
-
-
-
-//SE REFLEJA EN FORMULARIO LA FECHA SELECCCIONADA
-$("#selected-date-btn").click(function() {
-  // mostrar una alerta con la fecha seleccionada
-  if (selectedCell !== null) {
-    var dateStr = selectedCell.attr("data-date"); // obtener la fecha de la celda seleccionada
-    var selectedDate = moment(dateStr); // convertir la cadena de fecha a un objeto moment
-    var formattedDate = selectedDate.format("DD/MM/YYYY"); // formatear la fecha como "DD/MM/YYYY"
-    document.getElementById("fecha_cita").value=formattedDate;
-    $('#exampleModal').show();
-    //alert("Fecha seleccionada: " + formattedDate); // mostrar una alerta con la fecha seleccionada
-  } else {
-    $('#exampleModal2').show();
-  }
-});
-
-//----FIN SELECCION USUARIO----------
-$(document).on('click','#cerrar',function(){
-  $('#exampleModal').hide();
-  $('#exampleModal2').hide();
-})
-
+      // pintar la nueva celda seleccionada
+      $(this).css("background-color", "green");
+      selectedCell = $(this);
+    });
+  });
 </script>
-
-
+  
 
 
 
@@ -282,9 +286,14 @@ $(document).on('click','#cerrar',function(){
     </div>
   </div>
 </div>
+<br>
+
 <?php
+
 footerPrincipal($data); 
+
 ?>
+
 </body>
 <script src="<?= media();?>/js/bienvenida.js"></script>
 <script src="<?= media(); ?>/js/functions_citas.js"></script>

@@ -30,68 +30,20 @@
 		}
 
 
-
-/*
-// ya funciona  - ESTO SE ESTA REFLEJANDO EN EL NAVEGADOR SI PONEMOS LA URL http://localhost/prueba_veterinaria/calendario/getFechbloqueadas
-public function fechas_bloqueadas()
-{
-    // Obtener todas las fechas bloqueadas
-    $fechasBloqueadas = $this->model->obtenerFechasBloqueadas();
-    $eventos = array();
-    foreach ($fechasBloqueadas as $fecha) {
-        $evento = array(
-
-			'title' => 'Bloqueado',
-			'start' => $fecha['fecha_bloqueo'],
-			'backgroundColor' => '#f44336',
-			'borderColor' => '#f44336',
-			'editable' => false,
-			'startEditable' => false,
-			'durationEditable' => false,
-			 
+		function dias_bloqueados()
+		{
+			// Obtener todas las columnas bloqueadas
+			$columnasBloqueadas = $this->model->obtenerColumnasBloqueadas();
+			$columnas = array();
+			foreach ($columnasBloqueadas as $columna) {
+				$columnas[] = $columna['Nomb_dia'];
+			}
+			// Devolver el array de columnas en formato JSON
+			header('Content-Type: application/json');
+			echo json_encode($columnas);
+			die();
+		}
 		
-        );
-        $eventos[] = $evento;
-    }
-    // Devolver el array de eventos en formato JSON
-    header('Content-Type: application/json');
-    echo json_encode($eventos);
-    die();
-}
-*/
-
-/**
- * esto obtengo en el navegador en formato json
- * [{"title":"Bloqueado","start":"2023-03-28","color":"#f44336","editable":false,"startEditable":false,"durationEditable":false},
- * {"title":"Bloqueado","start":"2023-03-30","color":"#f44336","editable":false,"startEditable":false,"durationEditable":false},
- * {"title":"Bloqueado","start":"2023-03-24","color":"#f44336","editable":false,"startEditable":false,"durationEditable":false}]
- * 
- */
-
-
- /*
- public function eventos()
- {
-	 // Obtener todas las fechas bloqueadas
-	 $fechasBloqueadas = $this->model->obtenerFechasBloqueadas();
-	 $eventos = array();
-	 foreach ($fechasBloqueadas as $fecha) {
-		 $evento = array(
-			 'title' => 'Bloqueado',
-			 'start' => $fecha['fecha_bloqueo'],
-			 'color' => '#f44336',
-			 'editable' => false,
-			 'startEditable' => false,
-			 'durationEditable' => false
-		 );
-		 $eventos[] = $evento;
-	 }
-	 // Devolver el array de eventos en formato JSON
-	 $this->views->getView($this, "calendario", array("eventos" => $eventos));
-	 die();
- 
- }
-*/
 
 
 	}
