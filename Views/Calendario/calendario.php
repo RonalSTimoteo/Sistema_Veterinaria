@@ -1,23 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset='utf-8' />
-<link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/bootstrap.min.css">
-<link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/bootstrap2.min.css">
-<script type="text/javascript" src="<?= media();?>/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/calendar.css">
-<link rel="stylesheet" type="text/css" href="<?= media(); ?>/css/style.css">
 
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Raleway:300,400,500,700,800" rel="stylesheet">
-<script type="text/javascript" src="<?= media();?>/js/calendar.js"></script>
-<script type="text/javascript" src="<?= media();?>/js/locales-all.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-<script src="<?= media();?>/js/jquery.min.js"></script>
-
+<?php
+//TRAE EL HEADER 
+headerPrincipal($data); 
+?>
 
 <style>
-
 /*Reducir dimension del calendario sin perder lo respondive*/
 #calendar {
   width: 100%;
@@ -28,13 +15,8 @@
 
 </style>
 
-</head>
 <body>
   <!--RECORDAR QUE ESTE ARCHIVO ES LA VISTA DE CALENDARIO-->
-<?php
-//TRAE EL HEADER 
-headerPrincipal($data); 
-?>
 <br>
 <br>
 <!-- 
@@ -50,7 +32,7 @@ headerPrincipal($data);
 <!--Boton del modal-->
   <div class="text-center mb-3">
     <button type="button" class="btn btn-primary" id="selected-date-btn">
-      Agendar hora
+      Reservar cita
     </button>
   </div>
 
@@ -73,14 +55,14 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Llamada a la primera URL para recuperar el primer array
-  $.getJSON('http://localhost/Prueba_veterinaria/calendario/dias_bloqueados', function(data) {
+  $.getJSON('http://localhost/Microempresas/calendario/dias_bloqueados', function(data) {
     // Asignar el valor obtenido a la variable diasBloqueados
     diasBloqueados = data;
     diasBloqueadosNum = diasBloqueados.map(dia => diasSemana.indexOf(dia));
     console.log(diasBloqueadosNum);
 
     // Llamada a la segunda URL para recuperar el segundo array
-    $.getJSON('http://localhost/prueba_veterinaria/calendario/fechas_bloqueadas', function(data) {
+    $.getJSON('http://localhost/Microempresas/calendario/fechas_bloqueadas', function(data) {
       fechasBloqueadas = data;
       console.log(data);
 
@@ -239,7 +221,7 @@ $(document).on('click','#close-modal-btn',function(){
       </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" style="margin:auto" data-bs-dismiss="modal" aria-label="Close" id="cerrar">Reservar</button>
+        <button type="button" class="btn btn-primary" style="margin:auto" data-bs-dismiss="modal" aria-label="Close" id="cerrar">Registrar cita</button>
       </div>
     </div>
   </div>
