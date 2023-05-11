@@ -3,6 +3,14 @@
 		public function __construct()
 		{
 			parent::__construct();
+			            //se invoca a la var sesion con session estar y de esa manera el usuario tendra q haber inicido sesion en el login para acceder al dashboard			
+						session_start();
+						//session_regenerate_id(true);
+						if(empty($_SESSION['login']))
+						{
+							header('Location: '.base_url().'/login');
+							die();
+						}
 
 		}
 
@@ -19,13 +27,18 @@
 
 		public function getRoles()
 		{
+			$btnView = '';
+			$btnEdit = '';
+			$btnDelete = '';
+
 		
 				$arrData = $this->model->selectRoles();
 				
 				for ($i=0; $i < count($arrData); $i++) {
+					$btnView = '<button class="btn btn-secondary btn-sm btnPermisosRol" onClick="fntPermisos('.$arrData[$i]['id_rol'].')" title="Permisos"><i class="fas fa-key"></i></button>';
 					$btnEdit = '<button class="btn btn-primary  btn-sm" onClick="fntEditInfo('.$arrData[$i]['id_rol'].')" title="Editar producto"><i class="fas fa-pencil-alt"></i></button>';
 					$btnDelete = '<button class="btn btn-danger btn-sm" onClick="fntDelInfo('.$arrData[$i]['id_rol'].')" title="Eliminar producto"><i class="far fa-trash-alt"></i></button>';
-					$arrData[$i]['options'] = '<div class="text-center">'.$btnEdit.' '.$btnDelete.'</div>';  
+					$arrData[$i]['options'] = '<div class="text-center">'.$btnView.' '.$btnEdit.' '.$btnDelete.'</div>';  
 				}	
 
 

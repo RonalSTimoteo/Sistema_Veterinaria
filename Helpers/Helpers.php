@@ -7,6 +7,8 @@ require 'Libraries/phpmailer/Exception.php';
 require 'Libraries/phpmailer/PHPMailer.php';
 require 'Libraries/phpmailer/SMTP.php';
 
+
+
 	//Retorla la url del proyecto
 	function base_url()
 	{
@@ -39,6 +41,19 @@ require 'Libraries/phpmailer/SMTP.php';
         $view_footer = "Views/Template/footer.php";
         require_once ($view_footer);        
     }
+
+    function headerTienda($data="")
+    {
+        $view_header = "Views/Template/header_tienda.php";
+        require_once ($view_header);
+    }
+    function footerTienda($data="")
+    {
+        $view_footer = "Views/Template/footer_tienda.php";
+        require_once ($view_footer);        
+    }
+
+
 	//Muestra información formateada
 	function dep($data)
     {
@@ -85,6 +100,17 @@ require 'Libraries/phpmailer/SMTP.php';
         $string = str_ireplace("==","",$string);
         return $string;
     }
+
+
+    function sessionUser(int $idpersona){
+        require_once ("Models/LoginModel.php");
+        $objLogin = new LoginModel();
+
+        //trae todas los datos del usuario 
+        $request = $objLogin->sessionLogin($idpersona);
+        return $request;
+    }
+
     //Genera una contraseña de 10 caracteres
 	function passGenerator($length = 10)
     {
@@ -110,11 +136,6 @@ require 'Libraries/phpmailer/SMTP.php';
         $token = $r1.'-'.$r2.'-'.$r3.'-'.$r4;
         return $token;
     }
-    //Formato para valores monetarios
-    function formatMoney($cantidad){
-        $cantidad = number_format($cantidad,2,SPD,SPM);
-        return $cantidad;
-    }
 
 
     //SI LA FUNCION ENVIA TODO CORRECTO DEBERIA ENVIAR MSJ TODO CORRECTO
@@ -127,13 +148,13 @@ require 'Libraries/phpmailer/SMTP.php';
 
         try {
             //Server settings
-            $mail->SMTPDebug = 1;                      //Enable verbose debug output
+          //  $mail->SMTPDebug = 1;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
            // $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
            $mail->Host       = 'smtp.office365.com';  
            $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
            $mail->Username   = '1346203@senati.pe';                   //SMTP username
-           $mail->Password   = 'Virtual23';                             //SMTP password
+           $mail->Password   = 'CityBank100595';                             //SMTP password
             //$mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
             $mail->SMTPSecure = 'tls';  
             $mail->Port       = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
@@ -152,11 +173,14 @@ require 'Libraries/phpmailer/SMTP.php';
             $mail->Body    = $mensaje;
             
             $mail->send();
-            echo 'Mensaje enviado';
+           // echo 'Mensaje enviado';  //-> aca estaba el error debió develver un true u no una cadena de texto
+            return true;
         } catch (Exception $e) {
-            echo "Error en el envío del mensaje: {$mail->ErrorInfo}";
-        }
-    }
-    
+            return false;
+        } 
+ }
+
+
+ 
 
  ?>

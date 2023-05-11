@@ -27,7 +27,7 @@ $(document).on("click","#dashboard",function(){
 })
 
 
-
+/*
 function blog(){
     var miblog=`
     <section id="about">
@@ -45,7 +45,7 @@ function blog(){
     <div class="container about-container wow fadeInUp">
       <div class="row">
         <div class="col-md-6 col-md-push-6 about-content">
-          <h2 class="about-title">San Andres Vet Care</h2>
+          <h2 class="about-title">Veterinaria</h2>
           <p class="about-text">
           Nosotros somos un equipo de profesionales altamente capacitados en el cuidado de la salud animal.
           </p>
@@ -76,5 +76,6 @@ function blog(){
     `;
     $("#contenedor").html(miblog);
 };
+*/
 
 

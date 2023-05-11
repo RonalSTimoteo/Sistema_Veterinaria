@@ -4,6 +4,17 @@
 		{
 			parent::__construct();
 
+        
+            //se invoca a la var sesion con session estar y de esa manera el usuario tendra q haber inicido sesion en el login para acceder al dashboard			
+			session_start();
+			//session_regenerate_id(true);
+			if(empty($_SESSION['login']))
+			{
+				header('Location: '.base_url().'/login');
+				die();
+			}
+          //http://localhost/Veterinaria/usuarios -> de esa manera esa ruta queda restringida para los usuarios q no han iniciado sesion   
+
 		}
 
 		public function Usuarios()
@@ -55,6 +66,7 @@
 
 					if($id_usu == 0){
                         $option = 1;
+                        $pass_usu =  empty($_POST['pass_usu']) ? hash("SHA256",passGenerator()) : hash("SHA256",$_POST['pass_usu']);                   
                         $request_usuario = $this->model->insertUsuario($nom_usu,
                                                                         $ape_usu,
                                                                         $dni,
@@ -64,6 +76,7 @@
                                                                         $id_rol);
                     }else{
                         $option = 2;
+                        $pass_usu =  empty($_POST['pass_usu']) ? "" : hash("SHA256",$_POST['pass_usu']);
                         $request_usuario = $this->model->updateUsuario($id_usu,
                         $nom_usu,
                         $ape_usu,

@@ -2,7 +2,7 @@
 	
 	//define("BASE_URL", "http://localhost/tienda_virtual/");
 
-	const BASE_URL = "http://localhost/Microempresas/";
+	const BASE_URL = "http://localhost/Veterinaria";
 
 	//Zona horaria
 	date_default_timezone_set('America/Lima');
@@ -22,7 +22,24 @@
 	//Simbolo de moneda
 	const SMONEY = "Q";
 
+	//Para envío de correo
+	const ENVIRONMENT = 1; // Local: 0, Produccón: 1;
+	//Datos envio de correo
+	//Datos envio de correo
+	const NOMBRE_REMITENTE = "Clinica Veterinaria";
+	const EMAIL_REMITENTE = "134620@senati.pe";
+	const NOMBRE_EMPESA = "Clinica Veterinaria";
+	const WEB_EMPRESA = "www.ClinicaVeterinaria.com";
+
 	
+		//Módulos
+		const MDASHBOARD = 1;
+		const MUSUARIOS = 2;
+		const MCALENDARIO = 3;
+		const MSERVICIOS = 4;
+		const MREPORTES = 6;
+
+
 
 
  ?>

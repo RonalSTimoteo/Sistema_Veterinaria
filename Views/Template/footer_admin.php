@@ -20,8 +20,10 @@
     <script type="text/javascript" src="<?= media(); ?>/js/plugins/dataTables.bootstrap.min.js"></script>
         <!-- SCRIPT PARA CARGAR LA LIBRERIA SELECT -->
         <script type="text/javascript" src="<?= media();?>/js/plugins/bootstrap-select.min.js"></script>
-
+<!--
     <script type="text/javascript" src="<?= media();?>/js/functions_admin.js"></script>
+-->   
+    
     <script src="<?= media(); ?>/js/<?= $data['page_functions_js']; ?>"></script>
 
   </body>
