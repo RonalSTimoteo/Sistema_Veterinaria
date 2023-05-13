@@ -53,7 +53,7 @@
 
         <div class="form-group">
          <label for="listMascota">Tipo mascota:</label>
-         <select class="form-control" data-live-search="true" id="listMascota" name="listMascota"  required=""></select>
+         <select class="form-control"  id="listMascota" name="listMascota"  required=""></select>
        </div>
 
         <div class="form-group">

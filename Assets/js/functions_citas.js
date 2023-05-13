@@ -54,38 +54,14 @@ document.addEventListener('DOMContentLoaded', function(){
         "order":[[0,"desc"]]  
     });
 
-/*POR SI NECESITO REGISTRAR AL USUARIO Y LA CITA 
-	if(document.querySelector("#formCliente")){
-        let formCliente = document.querySelector("#formCliente");
-        formCliente.onsubmit = function(e) {
+//para insertar
+	if(document.querySelector("#ModalFormCitaAdmin")){
+        let formCitaAdmin = document.querySelector("#FormRegistroCitasAdmin");
+        formCitaAdmin.onsubmit = function(e) {
             e.preventDefault();
-            let strIdentificacion = document.querySelector('#txtIdentificacion').value;
-            let strNombre = document.querySelector('#txtNombre').value;
-            let strApellido = document.querySelector('#txtApellido').value;
-            let strEmail = document.querySelector('#txtEmail').value;
-            let intTelefono = document.querySelector('#txtTelefono').value;
-            let strNit = document.querySelector('#txtNit').value;
-            let strNomFical = document.querySelector('#txtNombreFiscal').value;
-            let strDirFiscal = document.querySelector('#txtDirFiscal').value;
-            let strPassword = document.querySelector('#txtPassword').value;
-
-            if(strIdentificacion == '' || strApellido == '' || strNombre == '' || strEmail == '' || intTelefono == '' || strNit == '' || strDirFiscal == '' || strNomFical=='' )
-            {
-                swal("Atención", "Todos los campos son obligatorios." , "error");
-                return false;
-            }
-
-            let elementsValid = document.getElementsByClassName("valid");
-            for (let i = 0; i < elementsValid.length; i++) { 
-                if(elementsValid[i].classList.contains('is-invalid')) { 
-                    swal("Atención", "Por favor verifique los campos en rojo." , "error");
-                    return false;
-                } 
-            } 
-            divLoading.style.display = "flex";
             let request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-            let ajaxUrl = base_url+'/Clientes/setCliente'; 
-            let formData = new FormData(formCliente);
+            let ajaxUrl = base_url+'/Cita/setCitaAdmin'; 
+            let formData = new FormData(formCitaAdmin);
             request.open("POST",ajaxUrl,true);
             request.send(formData);
             request.onreadystatechange = function(){
@@ -93,18 +69,8 @@ document.addEventListener('DOMContentLoaded', function(){
                     let objData = JSON.parse(request.responseText);
                     if(objData.status)
                     {
-                        if(rowTable == ""){
-                            tableClientes.api().ajax.reload();
-                        }else{
-                           rowTable.cells[1].textContent =  strIdentificacion;
-                           rowTable.cells[2].textContent =  strNombre;
-                           rowTable.cells[3].textContent =  strApellido;
-                           rowTable.cells[4].textContent =  strEmail;
-                           rowTable.cells[5].textContent =  intTelefono;
-                           rowTable = "";
-                        }
-                        $('#modalFormCliente').modal("hide");
-                        formCliente.reset();
+                        $('#ModalFormCitaAdmin').modal("hide");
+                        formCitaAdmin.reset();
                         swal("Usuarios", objData.msg ,"success");
                     }else{
                         swal("Error", objData.msg , "error");
@@ -115,10 +81,7 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         }
     }
-
-*/
-
-
+    fntMascota();
 }, false); //fin DOMContentLoaded
 
 
@@ -128,15 +91,11 @@ document.addEventListener('DOMContentLoaded', function(){
 //EDITAR CITA 
 //ESTA ENVIANDO EL ID AL HACER CLICK EN EL BOTON
 function fntEditInfo(idCita){
-    $('#ModalFormEditCitaAdmin').modal('show');
-    /*
+    //$('#ModalFormCitaAdmin').modal('show');
+ 
    // rowTable = element.parentNode.parentNode.parentNode;
-    document.querySelector('#titleModal').innerHTML ="Actualizar Cliente";
-    document.querySelector('.modal-header').classList.replace("headerRegister", "headerUpdate");
-    document.querySelector('#btnActionForm').classList.replace("btn-primary", "btn-info");
-    document.querySelector('#btnText').innerHTML ="Actualizar";
     let request = (window.XMLHttpRequest) ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    let ajaxUrl = base_url+'/Clientes/getCliente/'+idCita;
+    let ajaxUrl = base_url+'/Cita/getCita/'+idCita;
     request.open("GET",ajaxUrl,true);
     //TRAER TODOS LOS DATOS DEL CLIENTE 
     request.send();
@@ -145,23 +104,56 @@ function fntEditInfo(idCita){
 
         if(request.readyState == 4 && request.status == 200){
             let objData = JSON.parse(request.responseText);
+            console.log(request.responseText);
             if(objData.status)
             {
-                document.querySelector("#idUsuario").value = objData.data.idpersona;
-                document.querySelector("#txtIdentificacion").value = objData.data.identificacion;
-                document.querySelector("#txtNombre").value = objData.data.nombres;
-                document.querySelector("#txtApellido").value = objData.data.apellidos;
-                document.querySelector("#txtTelefono").value = objData.data.telefono;
-                document.querySelector("#txtEmail").value = objData.data.email_user;
-                document.querySelector("#txtNit").value =objData.data.nit;
-                document.querySelector("#txtNombreFiscal").value =objData.data.nombrefiscal;
-                document.querySelector("#txtDirFiscal").value =objData.data.direccionfiscal;
+                if(objData.status)
+                {
+             
+                    document.querySelector("#txtid_cita").value = objData.data.id_cita;
+                    document.querySelector("#txtfecha").value = objData.data.fecha;
+                    document.querySelector("#txthora").value = objData.data.hora;
+                    document.querySelector("#txtnombre").value = objData.data.usuario;
+                    document.querySelector("#txtlistMascota").value = objData.data.mascota;
+                    document.querySelector("#txtEspecificacion").value = objData.data.especificacion;
+                    document.querySelector("#txtservicio").value = objData.data.servicio;
+                    fntMascota();
+                }
+              // $('#txtlistMascota').selectpicker('render');
+                
             }
         }
         $('#ModalFormCitaAdmin').modal('show');
     }
-    */
+
 }
+
+function fntMascota(){
+    //verifica si exite el elemento listCategoria(element list )
+    if(document.querySelector('#txtlistMascota')){
+
+        //armamos la url a donde vamos a enviar los datos(si vamso a esa url veremos los datos de categoria en un html blanco)
+        let ajaxUrl = base_url+'/Servicios/getSelectMascotas';
+        let request = (window.XMLHttpRequest) ? 
+                    new XMLHttpRequest() : 
+                    new ActiveXObject('Microsoft.XMLHTTP');
+
+        //enviamos los datos por get en vez de POST
+        request.open("GET",ajaxUrl,true);
+        request.send();
+        request.onreadystatechange = function(){
+            if(request.readyState == 4 && request.status == 200){
+
+                console.log();
+                //si todo es correcto en el elemento list vamos colocar la respuesta (el array de LA )
+                document.querySelector('#txtlistMascota').innerHTML = request.responseText;
+               // $('#listMascota').selectpicker('render');
+            }
+        }
+    }
+}
+
+
 
 //ELIMANR CITA 
 function fntDelInfo(idpersona){

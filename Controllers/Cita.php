@@ -50,10 +50,11 @@
 
 
 //PRUEBA DE COMO HARIA DOS INSERT PARA REGISTRAR CITA EN EL ADMIN
- /*
-		public function setCliente(){
-			error_reporting(0);
+		public function setCitaAdmin(){
+			//error_reporting(0);
 			if($_POST){
+				dep($_POST);
+				die();
 				if(empty($_POST['txtIdentificacion']) || empty($_POST['txtNombre']) || empty($_POST['txtApellido']) || empty($_POST['txtTelefono']) || empty($_POST['txtEmail']) || empty($_POST['txtNit']) || empty($_POST['txtNombreFiscal']) || empty($_POST['txtDirFiscal']) )
 				{
 					$arrResponse = array("status" => false, "msg" => 'Datos incorrectos.');
@@ -120,15 +121,7 @@
 	//si inserta correctamente lo que hacemos es armamos el array para enviar el msj porajax 					
 						if($option == 1){
 							$arrResponse = array('status' => true, 'msg' => 'Datos guardados correctamente.');
-				//creamos esa var nombreUsuario para almacenar el nombre y apellido de los que viene por póst		
-							$nombreUsuario = $strNombre.' '.$strApellido;
-					//armamos el array donde le pasamos datos que viene por post		
-							$dataUsuario = array('nombreUsuario' => $nombreUsuario,
-												 'email' => $strEmail,
-												 'password' => $strPassword,
-												 'asunto' => 'Bienvenido a tu tienda en línea');
-				 //enviando esos datos al metodo que corresponde al smpt 										 
-							sendEmail($dataUsuario,'email_bienvenida');
+
 						}else{
 							$arrResponse = array('status' => true, 'msg' => 'Datos Actualizados correctamente.');
 						}
@@ -142,9 +135,30 @@
 			}
 			die();
 		}
-	*/
-
-
+		
+//traer los datos 
+		public function getCita($idCita){
+			//si llega el id 
+			//dep($idCita);
+			//die();			
+				$idCita = intval($idCita);
+				if($idCita > 0)
+				{
+					$arrData = $this->model->selectCita($idCita);
+					if(empty($arrData))
+					{
+						$arrResponse = array('status' => false, 'msg' => 'Datos no encontrados.');
+					}else{
+						$arrResponse = array('status' => true, 'data' => $arrData);
+					}
+			
+					echo json_encode($arrResponse,JSON_UNESCAPED_UNICODE);
+				}
+				//dep($arrResponse);
+				//die();
+			
+			die();
+		}
 
 
 
